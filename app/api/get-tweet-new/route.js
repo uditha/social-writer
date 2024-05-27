@@ -1,27 +1,43 @@
 import { NextResponse } from 'next/server';
+import cheerio from 'cheerio';
 
 export const maxDuration = 60; // This function can run for a maximum of 5 seconds
 export const dynamic = 'force-dynamic';
 
 
 export async function POST(request) {
-  const { url } = await request.json();
-  console.log('URL:', url); // Debug: print the URL
+    try {
+        const { url } = await request.json();
+        console.log('URL:', url); // Debug: print the URL
 
-  const tweetId = getTweetIdFromUrl(url);
+        let tweetText = '';
+        let mediaArr;
 
-  // Fetch tweet text using Puppeteer
-  try {
-    const tweetText = await fetchTweetTextFromTwitter(tweetId);
-    console.log('Tweet text:', tweetText); // Debug: print the tweet text
-    return NextResponse.json({ text: tweetText });
-  } catch (error) {
-    console.error('Error fetching tweet text:', error);
-    return NextResponse.json({ error: 'Error fetching tweet text' }, { status: 500 });
-  }
+        // check if the URL is from Twitter or LinkedIn
+        if (url && url.includes('twitter')) { 
+                const tweetId = getTweetIdFromUrl(url);
+                const twitterData = await fetchTweetTextFromTwitter(tweetId);
+                tweetText = twitterData.tweetText;
+                mediaArr = twitterData.mediaArr;
+        }
+
+        if (url && url.includes('linkedin')) {
+                const linkedInData = await fetchFromLinkedIn(url);
+                tweetText = linkedInData.tweetText;
+                mediaArr = linkedInData.mediaArr;
+                
+        }
+
+        return NextResponse.json({ text: tweetText, media: mediaArr });
+    } catch (error) {
+        console.error('Error fetching tweet text:', error);
+        return NextResponse.json({ error: 'Error fetching tweet text' }, { status: 500 });
+    }
 }
 
+
 function getTweetIdFromUrl(url) {
+    url = url.split('?')[0];
     const tweetId = url.split('/').pop().trim();
     console.log('tweetID: ', tweetId)
     return tweetId;
@@ -100,9 +116,62 @@ async function fetchTweetTextFromTwitter(tweetId) {
         const responseJSON = await response.json();
         console.log(responseJSON);
         const tweetText = responseJSON.data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.full_text;
-        return tweetText;
+        const media = responseJSON.data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.entities.media;
+        // // const node = responseJSON.data.find(element => element.media_url_https !== undefined);
+        // // console.log('Node:', node);
+
+        // if ( media === undefined ){
+        //     console.log('No media found');
+        //     const card = responseJSON.data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.card.legacy.binding_values[0].value.string_value;
+        //     const cardArr = JSON.parse(card);
+        //     console.log(cardArr.media_entities)
+        // } else {
+        //     console.log('Media:', media);
+        // }
+       
+
+        // get media_url_https and type from media array
+        if (!media) {
+            return { tweetText, mediaArr: [] };
+        }
+
+        const mediaArr = media.map((media) => {
+            return {
+                media_url_https: media.media_url_https,
+                type: media.type
+            }
+        });
+       
+        return { tweetText, mediaArr };
     } catch (error) {
         console.error('Error fetching tweet text:', error);
         throw error;  
+    }
+}
+
+async function fetchFromLinkedIn(url) {
+    try {
+        const response = await fetch(url);
+        const text = await response.text();
+        
+        const $ = cheerio.load(text);
+    
+        const tweetText = $('.main-feed-activity-card p.attributed-text-segment-list__content').text();
+
+        // const mainImage = $('article img.w-main-feed-card-media');
+        // console.log('Main Image:', mainImage[0].attribs.src);
+
+        return { tweetText, mediaArr: [] };
+
+        // if (mainImage) {
+        //     return { tweetText, mediaArr: [] };
+        
+        // } else {
+        //     return { tweetText, mediaArr: [] };
+        // }
+        
+    } catch (error) {
+        console.error('Error fetching LinkedIn text:', error);
+        throw error;
     }
 }

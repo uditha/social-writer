@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "axios": "^1.7.2",
+    "cheerio": "^1.0.0-rc.12",
     "next": "14.2.3",
     "openai": "^4.47.1",
     "react": "^18",

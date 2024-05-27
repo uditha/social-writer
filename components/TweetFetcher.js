@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const TweetFetcher = ({ setTweetText }) => {
+const TweetFetcher = ({ setTweetText, setMediaArr }) => {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -16,6 +16,7 @@ const TweetFetcher = ({ setTweetText }) => {
       });
       const data = await res.json();
       setTweetText(data.text);
+      setMediaArr(data.media);
     } catch (error) {
       console.error('Error fetching tweet text:', error);
     }

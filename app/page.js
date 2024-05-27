@@ -14,6 +14,7 @@ const ArticlePublished = dynamic(() => import('@/components/ArticlePublished'), 
 
 export default function Home() {
   const [tweetText, setTweetText] = useState('');
+  const [mediaArr, setMediaArr] = useState([]); 
   const [article, setArticle] = useState('');
   const [title, setTitle] = useState('');
   const [postUrl, setPostUrl] = useState('');
@@ -22,10 +23,10 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center text-gray-800">
-        <h1 className="text-6xl font-bold">Tweet to Article</h1>
-        {!tweetText && <TweetFetcher setTweetText={setTweetText} />}
-        {tweetText && !article && <ArticleGenerator tweetText={tweetText} setArticle={setArticle} setTitle={setTitle} />}
-        {article && !postUrl && <ArticleDisplay title={title} article={article} setPostUrl={setPostUrl} />}
+        <h1 className="text-2xl font-bold">Tweet to Article</h1>
+        {!tweetText && <TweetFetcher setTweetText={setTweetText} setMediaArr={setMediaArr} />}
+        {tweetText && !article && <ArticleGenerator tweetText={tweetText} setArticle={setArticle} setTitle={setTitle} mediaArr={mediaArr} />}
+        {article && !postUrl && <ArticleDisplay title={title} article={article} setPostUrl={setPostUrl} mediaArr={mediaArr} />}
         {postUrl && <ArticlePublished postUrl={postUrl} />}
       </main>
     </div>
