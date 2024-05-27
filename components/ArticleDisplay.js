@@ -7,6 +7,7 @@ const ArticleDisplay = ({ setPostUrl, title, article, mediaArr }) => {
   const [loading, setLoading] = useState(false);
   const [titleEdited, setTitleEdited] = useState(title); // state for title
   const [articleEdited, setArticleEdited] = useState(article); // state for article
+  const [status, setStatus] = useState('publish'); // state for status
 
   const postToWordPress = async () => {
     setLoading(true);
@@ -19,7 +20,8 @@ const ArticleDisplay = ({ setPostUrl, title, article, mediaArr }) => {
     const articleData = {
       title: titleEdited,
       content: articleEdited,
-      status: 'publish', // 'draft' to save as draft
+      // status: 'publish', // 'draft' to save as draft
+      status: status, 
     };
       
     try {
@@ -55,7 +57,6 @@ const ArticleDisplay = ({ setPostUrl, title, article, mediaArr }) => {
               <img key={index} src={media.media_url_https} alt={`Media ${index}`} className="w-40" />
             ))}
           </div>
-        
         )}
         <input
           type="text"
@@ -65,6 +66,28 @@ const ArticleDisplay = ({ setPostUrl, title, article, mediaArr }) => {
           placeholder="Enter title here"
         />
         <ReactQuill value={articleEdited} onChange={setArticleEdited} className="text-left mt-10" />
+        <div className="flex items-center mt-4">
+          <input
+            type="radio"
+            id="publish"
+            name="status"
+            value="publish"
+            checked={status === 'publish'}
+            onChange={e => setStatus(e.target.value)}
+            className="mr-2"
+          />
+          <label htmlFor="publish" className="mr-4">Publish</label>
+          <input
+            type="radio"
+            id="draft"
+            name="status"
+            value="draft"
+            checked={status === 'draft'}
+            onChange={e => setStatus(e.target.value)}
+            className="mr-2"
+          />
+          <label htmlFor="draft">Draft</label>
+        </div>
         <button
           onClick={postToWordPress}
           className="mt-4 p-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 focus:outline-none"
