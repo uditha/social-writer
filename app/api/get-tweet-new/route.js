@@ -14,7 +14,7 @@ export async function POST(request) {
         let mediaArr;
 
         // check if the URL is from Twitter or LinkedIn
-        if (url && url.includes('twitter')) { 
+        if (url && url.includes('twitter') || url.includes('x.com')) { 
                 const tweetId = getTweetIdFromUrl(url);
                 const twitterData = await fetchTweetTextFromTwitter(tweetId);
                 tweetText = twitterData.tweetText;
@@ -114,8 +114,13 @@ async function fetchTweetTextFromTwitter(tweetId) {
         });
 
         const responseJSON = await response.json();
-        console.log(responseJSON);
-        const tweetText = responseJSON.data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.full_text;
+
+        let tweetText = '';
+        if (responseJSON.data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.note_tweet) {
+            tweetText = responseJSON.data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.note_tweet.note_tweet_results.result.text;
+        } else {
+            tweetText = responseJSON.data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.full_text;
+        }
         const media = responseJSON.data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.entities.media;
         // // const node = responseJSON.data.find(element => element.media_url_https !== undefined);
         // // console.log('Node:', node);
@@ -174,4 +179,4 @@ async function fetchFromLinkedIn(url) {
         console.error('Error fetching LinkedIn text:', error);
         throw error;
     }
-}
+}   
