@@ -14,7 +14,7 @@ export async function POST(request) {
         if (language === 'both') {
             console.log('Both:', articleObject);
         } else {
-            return new Response(JSON.stringify({ 'title': articleObject.title, 'article': articleObject.article }), { status: 200 });
+            return new Response(JSON.stringify({ 'title': articleObject.title, 'article': articleObject.article, 'lan': language }), { status: 200 });
         }
 
     
