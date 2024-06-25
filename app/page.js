@@ -18,6 +18,7 @@ export default function Home() {
   const [article, setArticle] = useState('');
   const [title, setTitle] = useState('');
   const [postUrl, setPostUrl] = useState('');
+  const [lan, setLan] = useState('');
 
   
   return (
@@ -25,8 +26,8 @@ export default function Home() {
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center text-gray-800">
         <h1 className="text-2xl font-bold">Tweet to Article</h1>
         {!tweetText && <TweetFetcher setTweetText={setTweetText} setMediaArr={setMediaArr} />}
-        {tweetText && !article && <ArticleGenerator tweetText={tweetText} setArticle={setArticle} setTitle={setTitle} mediaArr={mediaArr} />}
-        {article && !postUrl && <ArticleDisplay title={title} article={article} setPostUrl={setPostUrl} mediaArr={mediaArr} />}
+        {tweetText && !article && <ArticleGenerator tweetText={tweetText} setArticle={setArticle} setTitle={setTitle} setLan={setLan} mediaArr={mediaArr} />}
+        {article && !postUrl && <ArticleDisplay title={title} article={article} lan={lan} setPostUrl={setPostUrl} mediaArr={mediaArr} />}
         {postUrl && <ArticlePublished postUrl={postUrl} />}
       </main>
     </div>

@@ -3,7 +3,7 @@ import axios from 'axios';
 import ReactQuill from 'react-quill'; // import Quill
 import 'react-quill/dist/quill.snow.css'; // import Quill styles
 
-const ArticleDisplay = ({ setPostUrl, title, article, mediaArr }) => {
+const ArticleDisplay = ({ setPostUrl, title, article, lan, mediaArr }) => {
   const [loading, setLoading] = useState(false);
   const [titleEdited, setTitleEdited] = useState(title); // state for title
   const [articleEdited, setArticleEdited] = useState(article); // state for article
@@ -50,6 +50,7 @@ const ArticleDisplay = ({ setPostUrl, title, article, mediaArr }) => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-blue-600">Generated Article</h1>
+      <p className='text-xl'>{lan}</p>
       <div className="mt-6 p-4 bg-white border border-gray-300 rounded-md shadow-md">
         { mediaArr && (
           <div className="flex space-x-4 mb-5">
